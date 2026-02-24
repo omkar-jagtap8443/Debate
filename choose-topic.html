@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Debate Topic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a2a, #1a1a4a);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .sparkles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: rgba(142, 78, 231, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(142, 78, 231, 0.5);
+            animation: sparkle-twinkle 3s infinite;
+        }
+        
+        @keyframes sparkle-twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+        
+        /* Game Zone */
+        .game-zone {
+            position: relative;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            padding: 12px 25px;
+            background: rgba(142, 78, 231, 0.3);
+            border: 2px solid #8e4ee7;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(142, 78, 231, 0.6);
+            transform: translateX(-5px);
+            box-shadow: 0 0 25px rgba(142, 78, 231, 0.7);
+        }
+        
+        /* Header */
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        
+        .neon-title {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #8e4ee7,
+                0 0 30px #8e4ee7;
+            animation: neon-pulse 2s infinite;
+        }
+        
+        @keyframes neon-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+        }
+        
+        /* Main Container */
+        .game-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Custom Topic Section */
+        .custom-topic-section {
+            width: 100%;
+            margin-bottom: 40px;
+            background: rgba(30, 30, 70, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(142, 78, 231, 0.4);
+            backdrop-filter: blur(10px);
+        }
+        
+        .section-title {
+            color: #8e4ee7;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .custom-topic-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .custom-topic-input {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(20, 20, 50, 0.8);
+            border: 2px solid #8e4ee7;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .custom-topic-input:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .custom-topic-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #8e4ee7, #ca4ee3);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .custom-topic-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(142, 78, 231, 0.7);
+        }
+        
+        /* Custom Topics Section - Added styling */
+        .custom-topics-section {
+            width: 100%;
+            margin-bottom: 40px;
+            background: rgba(30, 30, 70, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(142, 78, 231, 0.4);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .custom-topics-section .section-title {
+            color: #00b7ff;
+        }
+        
+        .custom-topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .no-custom-topics {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            border: 2px dashed rgba(255, 193, 7, 0.3);
+            border-radius: 15px;
+            background: rgba(20, 20, 50, 0.3);
+        }
+        
+        /* Preset Topics Section */
+        .preset-topics-section {
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        
+        .topic-category {
+            margin-bottom: 35px;
+            background: rgba(30, 30, 70, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(142, 78, 231, 0.4);
+            backdrop-filter: blur(10px);
+        }
+        
+        .category-title {
+            color: #00b7ff;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00b7ff;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 15px;
+        }
+        
+        .topic-btn {
+            background: rgba(20, 20, 50, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 18px;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .topic-btn:hover {
+            background: rgba(142, 78, 231, 0.2);
+            border-color: #8e4ee7;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(142, 78, 231, 0.3);
+        }
+        
+        .topic-btn.selected {
+            background: rgba(142, 78, 231, 0.3);
+            border-color: #8e4ee7;
+            box-shadow: 0 0 25px rgba(142, 78, 231, 0.5);
+        }
+        
+        .custom-topic-btn-item {
+            background: rgba(30, 30, 70, 0.8);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            border-radius: 15px;
+            padding: 18px;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .custom-topic-btn-item:hover {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+        }
+        
+        .custom-topic-btn-item.selected {
+            background: rgba(255, 193, 7, 0.3);
+            border-color: #ffc107;
+            box-shadow: 0 0 25px rgba(255, 193, 7, 0.5);
+        }
+        
+        .difficulty-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .easy-dot { 
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+        .medium-dot { 
+            background: #ffc107;
+            box-shadow: 0 0 10px #ffc107;
+        }
+        .hard-dot { 
+            background: #ff0080;
+            box-shadow: 0 0 10px #ff0080;
+        }
+        
+        .custom-dot {
+            background: #ffc107;
+            box-shadow: 0 0 10px #ffc107;
+        }
+        
+        /* Side Selection */
+        .side-selection {
+            margin: 30px 0;
+            width: 100%;
+            display: none;
+            animation: fadeIn 0.5s;
+            background: rgba(30, 30, 70, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            border: 3px solid #8e4ee7;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .selected-topic-display {
+            font-size: 1.4rem;
+            color: #8e4ee7;
+            margin-bottom: 25px;
+            text-align: center;
+            background: rgba(20, 20, 50, 0.6);
+            padding: 15px;
+            border-radius: 15px;
+            border-left: 5px solid #8e4ee7;
+        }
+        
+        .side-selection h2 {
+            color: white;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .side-selection p {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+        
+        .side-buttons {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .side-btn {
+            padding: 20px 40px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-weight: bold;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pro-btn {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            border: 2px solid #00ff88;
+        }
+        
+        .pro-btn:hover {
+            background: linear-gradient(45deg, #00cec9, #00b894);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 255, 136, 0.4);
+        }
+        
+        .con-btn {
+            background: linear-gradient(45deg, #e84393, #fd79a8);
+            border: 2px solid #ff0080;
+        }
+        
+        .con-btn:hover {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 0, 128, 0.4);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .neon-title {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .custom-topic-form {
+                flex-direction: column;
+            }
+            
+            .custom-topic-input, .custom-topic-btn {
+                width: 100%;
+            }
+            
+            .topics-grid, .custom-topics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .side-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .side-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .back-btn {
+                top: 15px;
+                left: 15px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sparkles Background -->
+    <div class="sparkles-container" id="sparklesContainer"></div>
+    
+    <div class="game-zone">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i> BACK TO OPPONENT
+        </button>
+        
+        <div class="game-container">
+            <div class="header-section">
+                <h1 class="neon-title">CHOOSE DEBATE TOPIC</h1>
+            </div>
+            
+            <!-- Custom Topic Input -->
+            <div class="custom-topic-section">
+                <div class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    CREATE YOUR OWN TOPIC
+                </div>
+                <div class="custom-topic-form">
+                    <input type="text" 
+                           class="custom-topic-input" 
+                           id="customTopicInput" 
+                           placeholder="Enter your debate topic here... (e.g., 'Artificial intelligence will benefit humanity')"
+                           maxlength="150">
+                    <button class="custom-topic-btn" onclick="useCustomTopic()">
+                        <i class="fas fa-plus"></i> USE THIS TOPIC
+                    </button>
+                </div>
+            </div>
+            
+            
+            
+            <!-- Preset Topics -->
+            <div class="preset-topics-section">
+                <h2 class="section-title" style="color: #00b7ff; margin-bottom: 25px;">
+                    <i class="fas fa-list-alt"></i>
+                    SELECT FROM PRESET TOPICS
+                </h2>
+                
+                <!-- Technology Topics -->
+                <div class="topic-category">
+                    <div class="category-title">
+                        <i class="fas fa-microchip"></i>
+                        Technology & AI
+                    </div>
+                    <div class="topics-grid">
+                        <button class="topic-btn" onclick="selectTopic('AI will create more jobs than it destroys')">
+                            <span class="difficulty-indicator easy-dot"></span>
+                            AI will create more jobs than it destroys
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Social media does more harm than good')">
+                            <span class="difficulty-indicator medium-dot"></span>
+                            Social media does more harm than good
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Cryptocurrency should replace traditional banking')">
+                            <span class="difficulty-indicator hard-dot"></span>
+                            Cryptocurrency should replace traditional banking
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Robots should have legal rights')">
+                            <span class="difficulty-indicator hard-dot"></span>
+                            Robots should have legal rights
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Society Topics -->
+                <div class="topic-category">
+                    <div class="category-title">
+                        <i class="fas fa-globe"></i>
+                        Society & Environment
+                    </div>
+                    <div class="topics-grid">
+                        <button class="topic-btn" onclick="selectTopic('Universal basic income should be implemented worldwide')">
+                            <span class="difficulty-indicator medium-dot"></span>
+                            Universal basic income should be implemented
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Climate change is the most urgent issue facing humanity')">
+                            <span class="difficulty-indicator easy-dot"></span>
+                            Climate change is the most urgent issue
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Space exploration is worth the cost')">
+                            <span class="difficulty-indicator medium-dot"></span>
+                            Space exploration is worth the cost
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Governments should regulate social media content')">
+                            <span class="difficulty-indicator medium-dot"></span>
+                            Governments should regulate social media
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Philosophy Topics -->
+                <div class="topic-category">
+                    <div class="category-title">
+                        <i class="fas fa-brain"></i>
+                        Philosophy & Ethics
+                    </div>
+                    <div class="topics-grid">
+                        <button class="topic-btn" onclick="selectTopic('Free will is an illusion')">
+                            <span class="difficulty-indicator hard-dot"></span>
+                            Free will is an illusion
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Happiness is more important than success')">
+                            <span class="difficulty-indicator easy-dot"></span>
+                            Happiness is more important than success
+                        </button>
+                        <button class="topic-btn" onclick="selectTopic('Technology is making humans less intelligent')">
+                            <span class="difficulty-indicator medium-dot"></span>
+                            Technology is making humans less intelligent
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Custom Topics Section (will show when there are custom topics) -->
+            <div class="custom-topics-section" id="customTopicsSection">
+                <div class="section-title">
+                    <i class="fas fa-star"></i>
+                    Your Custom Topics
+                </div>
+                <div class="custom-topics-grid" id="customTopicsGrid">
+                    <!-- Custom topics will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Side Selection (shown after topic is selected) -->
+            <div class="side-selection" id="sideSelection">
+                <div class="selected-topic-display" id="selectedTopicDisplay">
+                    Topic will appear here
+                </div>
+                
+                <h2>CHOOSE YOUR SIDE</h2>
+                <p>Which position would you like to argue?</p>
+                
+                <div class="side-buttons">
+                    <button class="side-btn pro-btn" onclick="chooseSide('pro')">
+                        <i class="fas fa-thumbs-up"></i>
+                        ARGUE IN FAVOR (PRO)
+                    </button>
+                    <button class="side-btn con-btn" onclick="chooseSide('con')">
+                        <i class="fas fa-thumbs-down"></i>
+                        ARGUE AGAINST (CON)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Create sparkling background
+        function createSparkles() {
+            const container = document.getElementById('sparklesContainer');
+            const sparkleCount = 50;
+            
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                // Random position
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = Math.random() * 100 + 'vh';
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                sparkle.style.width = size + 'px';
+                sparkle.style.height = size + 'px';
+                
+                // Random animation delay
+                sparkle.style.animationDelay = Math.random() * 3 + 's';
+                
+                // Random color variation
+                const colors = [
+                    'rgba(142, 78, 231, 0.8)',
+                    'rgba(0, 183, 255, 0.8)',
+                    'rgba(0, 255, 136, 0.8)',
+                    'rgba(255, 193, 7, 0.8)'
+                ];
+                sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                container.appendChild(sparkle);
+            }
+        }
+        
+        let selectedTopic = null;
+        
+        // Load custom topics from server
+        async function loadCustomTopics() {
+            try {
+                const response = await fetch('/api/custom-topics');
+                if (response.ok) {
+                    const data = await response.json();
+                    displayCustomTopics(data.topics);
+                    return data.topics;
+                }
+            } catch (error) {
+                console.error('Error loading custom topics:', error);
+            }
+            return [];
+        }
+        
+        // Display custom topics in the UI - SORTED ALPHABETICALLY
+        function displayCustomTopics(topics) {
+            const customTopicsSection = document.getElementById('customTopicsSection');
+            const customTopicsGrid = document.getElementById('customTopicsGrid');
+            
+            if (!topics || topics.length === 0) {
+                customTopicsSection.style.display = 'none';
+                return;
+            }
+            
+            // Clear existing custom topics
+            customTopicsGrid.innerHTML = '';
+            
+            // Sort topics alphabetically
+            const sortedTopics = [...topics].sort((a, b) => 
+                a.toLowerCase().localeCompare(b.toLowerCase())
+            );
+            
+            // Add each custom topic as a button
+            sortedTopics.forEach(topic => {
+                const topicBtn = document.createElement('button');
+                topicBtn.className = 'custom-topic-btn-item';
+                topicBtn.innerHTML = `
+                    <span class="difficulty-indicator custom-dot"></span>
+                    ${topic}
+                `;
+                
+                topicBtn.onclick = function() {
+                    selectTopic(topic);
+                };
+                
+                customTopicsGrid.appendChild(topicBtn);
+            });
+            
+            // Show the custom topics section with animation
+            customTopicsSection.style.display = 'block';
+            customTopicsSection.style.animation = 'fadeIn 0.5s';
+        }
+        
+        // Select topic from preset or custom
+        function selectTopic(topic) {
+            selectedTopic = topic;
+            
+            // Clear custom input
+            document.getElementById('customTopicInput').value = '';
+            
+            // Visual feedback - remove selection from all buttons
+            document.querySelectorAll('.topic-btn, .custom-topic-btn-item').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection to clicked button
+            event.currentTarget.classList.add('selected');
+            
+            // Update display
+            document.getElementById('selectedTopicDisplay').textContent = topic;
+            
+            // Show side selection with animation
+            const sideSelection = document.getElementById('sideSelection');
+            sideSelection.style.display = 'block';
+            sideSelection.style.animation = 'fadeIn 0.5s';
+            
+            // Scroll to side selection
+            sideSelection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        // Use custom topic
+        async function useCustomTopic() {
+            const customInput = document.getElementById('customTopicInput');
+            const topic = customInput.value.trim();
+            
+            if (!topic) {
+                alert('Please enter a topic first!');
+                customInput.focus();
+                return;
+            }
+            
+            if (topic.length < 5) {
+                alert('Topic should be at least 5 characters long');
+                return;
+            }
+            
+            selectedTopic = topic;
+            
+            // Save the custom topic
+            const saved = await saveCustomTopic(topic);
+            if (saved) {
+                console.log('Custom topic saved for future use');
+                // Reload and display custom topics
+                await loadCustomTopics();
+            }
+            
+            // Clear preset selections
+            document.querySelectorAll('.topic-btn, .custom-topic-btn-item').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Update display
+            document.getElementById('selectedTopicDisplay').textContent = topic;
+            
+            // Show side selection
+            const sideSelection = document.getElementById('sideSelection');
+            sideSelection.style.display = 'block';
+            sideSelection.style.animation = 'fadeIn 0.5s';
+            
+            // Scroll to side selection
+            sideSelection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Clear the input
+            customInput.value = '';
+            
+            // Play success sound
+            playSuccessSound();
+        }
+        
+        // Save custom topic to server
+        async function saveCustomTopic(topic) {
+            try {
+                const response = await fetch('/api/save-topic', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ topic: topic })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Topic saved:', data.message);
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error saving topic:', error);
+            }
+            return false;
+        }
+        
+        // Choose side (pro or con)
+        function chooseSide(side) {
+            if (!selectedTopic) {
+                alert('Please select a topic first!');
+                return;
+            }
+            
+            // Play click sound
+            playClickSound();
+            
+            // Save to localStorage
+            localStorage.setItem('debateTopic', selectedTopic);
+            localStorage.setItem('userSide', side);
+            localStorage.setItem('aiSide', side === 'pro' ? 'con' : 'pro');
+            
+            // Show loading animation
+            const sideSelection = document.getElementById('sideSelection');
+            sideSelection.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #8e4ee7; margin-bottom: 20px;"></i>
+                    <h2 style="color: #8e4ee7;">PREPARING DEBATE...</h2>
+                    <p>Loading debate interface for: "${selectedTopic}"</p>
+                </div>
+            `;
+            
+            // Animate transition
+            document.querySelector('.game-container').style.animation = 'fadeOut 0.8s forwards';
+            
+            // Create fade out animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    from { opacity: 1; transform: scale(1); }
+                    to { opacity: 0; transform: scale(0.9); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                window.location.href = 'debate.html';
+            }, 1200);
+        }
+        
+        // Go back to opponent selection
+        function goBack() {
+            playClickSound();
+            
+            document.querySelector('.game-zone').style.animation = 'fadeOut 0.4s forwards';
+            
+            setTimeout(() => {
+                window.location.href = 'choose-ai.html';
+            }, 400);
+        }
+        
+        // Sound functions
+        function playClickSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 523.25;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.1);
+            } catch (error) {
+                // Audio not supported
+            }
+        }
+        
+        function playSuccessSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                // Create chord
+                const frequencies = [523.25, 659.25, 783.99]; // C, E, G
+                
+                frequencies.forEach((freq, index) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0, now + (index * 0.05));
+                    gainNode.gain.linearRampToValueAtTime(0.1, now + 0.01 + (index * 0.05));
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3 + (index * 0.05));
+                    
+                    oscillator.start(now + (index * 0.05));
+                    oscillator.stop(now + 0.3 + (index * 0.05));
+                });
+            } catch (error) {
+                // Audio not supported
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Create sparkles
+            createSparkles();
+            
+            // Focus on custom input
+            document.getElementById('customTopicInput').focus();
+            
+            // Check if there's a previously selected topic
+            const savedTopic = localStorage.getItem('debateTopic');
+            if (savedTopic) {
+                document.getElementById('customTopicInput').placeholder = `Last topic: "${savedTopic.substring(0, 50)}${savedTopic.length > 50 ? '...' : ''}"`;
+            }
+            
+            // Allow pressing Enter in custom topic input
+            document.getElementById('customTopicInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    useCustomTopic();
+                }
+            });
+            
+            // Load custom topics from server
+            await loadCustomTopics();
+        });
+    </script>
+</body>
+</html>

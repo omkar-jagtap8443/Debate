@@ -1,0 +1,703 @@
+<!-- choose-ai.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your AI Opponent</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Full page with horizontal layout */
+        html, body {
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .game-zone {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        /* Back button */
+        .back-btn {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            padding: 12px 25px;
+            background: rgba(142, 78, 231, 0.3);
+            border: 2px solid #8e4ee7;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(142, 78, 231, 0.6);
+            transform: translateX(-5px);
+            box-shadow: 0 0 25px rgba(142, 78, 231, 0.7);
+        }
+        
+        /* Header */
+        .header-section {
+            text-align: center;
+            margin-bottom: 40px;
+            position: absolute;
+            top: 80px;
+            width: 100%;
+        }
+        
+        .neon-title {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #8e4ee7,
+                0 0 30px #8e4ee7;
+            animation: neon-pulse 2s infinite;
+        }
+        
+        @keyframes neon-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Competitors container - positioned below title */
+        .competitors-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding-top: 150px; /* Space for title */
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Single row container - all competitors in one row */
+        .competitors-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            width: 100%;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Competitor cards - all same size */
+        .competitor-card {
+            background: rgba(30, 30, 70, 0.85);
+            border-radius: 25px;
+            padding: 25px;
+            width: 290px;
+            height: 370px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid rgba(142, 78, 231, 0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        /* Immediate hover effect (no sound) */
+        .competitor-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #8e4ee7;
+            box-shadow: 
+                0 15px 30px rgba(142, 78, 231, 0.5),
+                0 0 50px rgba(202, 78, 227, 0.4);
+        }
+        
+        .competitor-card:hover .ai-avatar {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+        
+        /* Selection effect */
+        .competitor-card.selected {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #00ff88;
+            background: rgba(142, 78, 231, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(142, 78, 231, 0.6),
+                0 0 70px rgba(0, 255, 136, 0.4);
+            animation: selected-pulse 2s infinite;
+        }
+        
+        @keyframes selected-pulse {
+            0%, 100% { 
+                box-shadow: 
+                    0 20px 40px rgba(142, 78, 231, 0.6),
+                    0 0 70px rgba(0, 255, 136, 0.4);
+            }
+            50% { 
+                box-shadow: 
+                    0 20px 40px rgba(142, 78, 231, 0.8),
+                    0 0 90px rgba(0, 255, 136, 0.6);
+            }
+        }
+        
+        .competitor-card.selected .ai-avatar {
+            border-color: #00ff88;
+            box-shadow: 
+                0 0 40px rgba(142, 78, 231, 0.8),
+                0 0 60px rgba(0, 255, 136, 0.4);
+        }
+        
+        /* Avatar */
+        .avatar-container {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .ai-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #8e4ee7;
+            box-shadow: 0 0 25px rgba(142, 78, 231, 0.5);
+            transition: all 0.3s;
+        }
+        
+        /* Name */
+        .ai-name {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .competitor-card.selected .ai-name {
+            color: #8e4ee7;
+            text-shadow: 0 0 15px rgba(142, 78, 231, 0.7);
+        }
+        
+        /* Difficulty level */
+        .difficulty {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .beginner {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 2px solid #00ff88;
+        }
+        
+        .intermediate {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 2px solid #ffc107;
+        }
+        
+        .expert {
+            background: rgba(255, 0, 128, 0.2);
+            color: #ff0080;
+            border: 2px solid #ff0080;
+        }
+        
+        /* Continue section */
+        .continue-section {
+            text-align: center;
+            margin-top: 50px;
+            position: relative;
+            width: 100%;
+            animation: fadeIn 0.5s;
+            display: none;
+            z-index: 20;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .continue-btn {
+            padding: 18px 50px;
+            font-size: 1.4rem;
+            background: linear-gradient(45deg, #8e4ee7, #ca4ee3);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 0 auto;
+        }
+        
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 30px rgba(142, 78, 231, 0.7),
+                0 0 50px rgba(202, 78, 227, 0.4);
+        }
+        
+        .continue-btn i {
+            font-size: 1.6rem;
+            animation: arrow-bounce 1s infinite;
+        }
+        
+        @keyframes arrow-bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+        
+        /* Selected avatar name in button */
+        .avatar-name-in-button {
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1400px) {
+            .competitor-card {
+                width: 220px;
+                height: 320px;
+            }
+            
+            .avatar-container {
+                width: 130px;
+                height: 130px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .competitor-card {
+                width: 200px;
+                height: 300px;
+            }
+            
+            .avatar-container {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .ai-name {
+                font-size: 1.6rem;
+            }
+            
+            .continue-btn {
+                font-size: 1.2rem;
+                padding: 15px 40px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .competitors-container {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .competitor-card {
+                width: 180px;
+                height: 260px;
+                padding: 20px;
+            }
+            
+            .avatar-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .neon-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .continue-btn {
+                font-size: 1.1rem;
+                padding: 12px 30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-zone {
+                justify-content: flex-start;
+                padding-top: 100px;
+            }
+            
+            .header-section {
+                position: relative;
+                top: 0;
+                margin-bottom: 30px;
+            }
+            
+            .competitors-section {
+                padding-top: 100px;
+            }
+            
+            .competitors-container {
+                flex-direction: column;
+                gap: 25px;
+                height: auto;
+                overflow-y: auto;
+                padding-bottom: 120px;
+            }
+            
+            .competitor-card {
+                width: 250px;
+                height: 300px;
+            }
+            
+            .continue-section {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                background: rgba(10, 10, 42, 0.95);
+                padding: 15px;
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+                border: 2px solid #8e4ee7;
+            }
+            
+            .continue-btn {
+                font-size: 1rem;
+                padding: 10px 25px;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-zone">
+        <!-- Animated Background -->
+        <div class="stars"></div>
+        
+        <!-- Back Button -->
+        <button class="back-btn" onclick="goBack()">← BACK TO ARENA</button>
+        
+        <!-- Header -->
+        <div class="header-section">
+            <h1 class="neon-title">CHOOSE YOUR OPPONENT</h1>
+            
+        </div>
+        
+        <!-- Competitors Section - Below Title -->
+        <div class="competitors-section">
+            <!-- All Competitors in One Row -->
+            <div class="competitors-container">
+                <!-- Girl -->
+                <div class="competitor-card" onclick="selectOpponent('LUNA', 'BEGINNER')" id="luna-card">
+                    <div class="avatar-container">
+                     <img src="images/avatars/luna.jpeg" alt="Luna Avatar" class="ai-avatar">
+                    </div>
+                    <div class="ai-name">LUNA</div>
+                    <div class="difficulty beginner">BEGINNER</div>
+                </div>
+                
+                <!-- Woman -->
+                <div class="competitor-card" onclick="selectOpponent('ATHENA', 'INTERMEDIATE')" id="athena-card">
+                    <div class="avatar-container">
+                        <img src="images/avatars/athena.jpeg" alt="Athena Avatar" class="ai-avatar">
+                    </div>
+                    <div class="ai-name">ATHENA</div>
+                    <div class="difficulty intermediate">INTERMEDIATE</div>
+                </div>
+                
+                <!-- Boy -->
+                <div class="competitor-card" onclick="selectOpponent('LEO', 'BEGINNER')" id="leo-card">
+                    <div class="avatar-container">
+                        <img src="images/avatars/leo.jpg"
+                             alt="Leo Avatar" 
+                             class="ai-avatar">
+                    </div>
+                    <div class="ai-name">LEO</div>
+                    <div class="difficulty beginner">BEGINNER</div>
+                </div>
+                
+                <!-- Man -->
+                <div class="competitor-card" onclick="selectOpponent('TITAN', 'EXPERT')" id="titan-card">
+                    <div class="avatar-container">
+                        <img src="images/avatars/titan.jpeg"
+                             alt="Titan Avatar" 
+                             class="ai-avatar">
+                    </div>
+                    <div class="ai-name">TITAN</div>
+                    <div class="difficulty expert">EXPERT</div>
+                </div>
+            </div>
+            
+            <!-- Continue Section -->
+            <div class="continue-section" id="continueSection">
+                <button class="continue-btn" onclick="proceedToTopic()">
+                    CONTINUE THE BATTLE WITH<span class="avatar-name-in-button" id="selectedAvatarNameInButton">[AVATAR]</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Particles Animation -->
+        <canvas id="particles-canvas"></canvas>
+    </div>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        // Sound functions - only for clicks
+        function playSelectSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 784.0;
+                oscillator.type = 'triangle';
+                
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+            } catch (error) {
+                // Audio not supported
+            }
+        }
+        
+        function playClickSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioContext.currentTime;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 523.25;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.1);
+            } catch (error) {
+                // Audio not supported
+            }
+        }
+        
+        // Initialize particles
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('particles-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            
+            // Create minimal particles
+            const particles = [];
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    color: `rgba(142, 78, 231, ${Math.random() * 0.2 + 0.1})`
+                });
+            }
+            
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+                    
+                    // Wrap around edges
+                    if (particle.x < -20) particle.x = canvas.width + 20;
+                    if (particle.x > canvas.width + 20) particle.x = -20;
+                    if (particle.y < -20) particle.y = canvas.height + 20;
+                    if (particle.y > canvas.height + 20) particle.y = -20;
+                    
+                    // Draw particle
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color;
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animateParticles);
+            }
+            
+            animateParticles();
+            window.addEventListener('resize', resizeCanvas);
+        });
+        
+        let selectedOpponent = null;
+        let selectedOpponentName = '';
+        let selectedOpponentLevel = '';
+        
+        function selectOpponent(name, level) {
+            // Play selection sound immediately on click
+            playSelectSound();
+            
+            selectedOpponent = name.toLowerCase();
+            selectedOpponentName = name;
+            selectedOpponentLevel = level;
+            
+            // Remove selection from all cards
+            document.querySelectorAll('.competitor-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            const selectedCard = document.getElementById(`${selectedOpponent}-card`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            // Update the continue button text with selected avatar name
+            const avatarNameInButton = document.getElementById('selectedAvatarNameInButton');
+            avatarNameInButton.textContent = selectedOpponentName;
+            
+            // Show continue button with animation
+            const continueSection = document.getElementById('continueSection');
+            continueSection.style.display = 'block';
+            continueSection.style.animation = 'fadeIn 0.5s';
+            
+            // Save to localStorage
+            localStorage.setItem('selectedOpponent', selectedOpponent);
+            localStorage.setItem('selectedOpponentName', selectedOpponentName);
+            localStorage.setItem('selectedOpponentLevel', selectedOpponentLevel);
+        }
+        
+        function proceedToTopic() {
+            if (selectedOpponent) {
+                // Play click sound
+                playClickSound();
+                
+                // Show loading state on button
+                const continueBtn = document.querySelector('.continue-btn');
+                const originalText = continueBtn.innerHTML;
+                continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                continueBtn.disabled = true;
+                
+                // Create success message
+                const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(20, 20, 50, 0.95);
+                    color: white;
+                    padding: 25px 40px;
+                    border-radius: 20px;
+                    border: 3px solid #8e4ee7;
+                    text-align: center;
+                    z-index: 1000;
+                    backdrop-filter: blur(10px);
+                    box-shadow: 0 0 40px rgba(142, 78, 231, 0.7);
+                    animation: fadeIn 0.3s;
+                `;
+                successMessage.innerHTML = `
+                    <h2 style="color: #8e4ee7; margin-bottom: 10px;">OPPONENT SELECTED!</h2>
+                    <p style="font-size: 1.4rem; margin-bottom: 5px;">
+                        You're challenging <span style="color: #ffcc00; font-weight: bold;">${selectedOpponentName}</span>
+                    </p>
+                    <p style="color: ${selectedOpponentLevel === 'BEGINNER' ? '#00ff88' : selectedOpponentLevel === 'INTERMEDIATE' ? '#ffc107' : '#ff0080'}; margin-bottom: 15px;">
+                        ${selectedOpponentLevel} difficulty
+                    </p>
+                    <p style="font-size: 1rem; color: #ccc; margin-top: 10px;">
+                        Proceeding to topic selection...
+                    </p>
+                `;
+                document.body.appendChild(successMessage);
+                
+                // Transition effect
+                document.querySelector('.game-zone').style.animation = 'fadeOut 0.8s forwards';
+                
+                // Create fade out animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeOut {
+                        from { opacity: 1; transform: scale(1); }
+                        to { opacity: 0; transform: scale(0.9); }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                setTimeout(() => {
+                    window.location.href = 'choose-topic.html';
+                }, 3000);
+            } else {
+                alert('Please select an opponent first!');
+            }
+        }
+        
+        function goBack() {
+            // Play click sound for back button
+            
+            
+            document.querySelector('.game-zone').style.animation = 'fadeOut 0.4s forwards';
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 400);
+        }
+    </script>
+</body>
+</html>

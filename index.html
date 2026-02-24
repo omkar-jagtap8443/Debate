@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Debate Arena - Game Zone</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Arial Black', 'Impact', sans-serif;
+        }
+
+        .game-zone {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Full-size background image */
+        .game-zone::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/avatars/Arena/arena.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        /* Keep your existing animated elements but ensure they're above the background */
+        .stars, .pulse-ring {
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5vh 20px 10vh 20px;
+            z-index: 3;
+        }
+
+        /* AI DEBATE ARENA Title Styling - at the top */
+        .neon-title {
+            font-size: 3.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #fff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 40px #00ffff,
+                0 0 80px #00ffff,
+                0 0 120px #00ffff;
+            animation: neonPulse 1.5s ease-in-out infinite;
+            margin-top: 5vh;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        /* Middle button - transparent, just text over the shape */
+        .battle-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.0rem;
+            
+            text-transform: uppercase;
+            letter-spacing: 0.3rem;
+            color: #fff;
+            
+            animation: textPulse 2s ease-in-out infinite;
+            text-align: center;
+            margin: 0 20px;
+            padding: 30px 50px;  /* Makes the clickable area cover the shape */
+            transition: all 0.3s ease;
+            z-index: 5;
+            position: absolute;
+            top: 49.5%;
+            left: 49.4%;
+            transform: translate(-50%, -50%);
+            width: auto;
+            white-space: nowrap;
+        }
+
+        .battle-btn:hover {
+            
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .battle-btn:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        /* Animations */
+        @keyframes neonPulse {
+            0%, 100% {
+                text-shadow: 
+                    0 0 10px #00ffff,
+                    0 0 20px #00ffff,
+                    0 0 40px #00ffff,
+                    0 0 80px #00ffff,
+                    0 0 120px #00ffff;
+            }
+            50% {
+                text-shadow: 
+                    0 0 5px #00ffff,
+                    0 0 10px #00ffff,
+                    0 0 20px #00ffff,
+                    0 0 40px #00ffff,
+                    0 0 80px #00ffff;
+            }
+        }
+
+        @keyframes textPulse {
+            0%, 100% {
+                text-shadow: 
+                    0 0 20px #6a2289,
+                    0 0 40px #6a2289,
+                    0 0 60px #65096f,
+                    0 0 80px #65096f;
+            }
+            50% {
+                text-shadow: 
+                    0 0 30px #439adc,
+                    0 0 60px #439adc,
+                    0 0 90px #439adc,
+                    0 0 120px #439adc;
+            }
+        }
+
+        /* Make sure particles canvas is above everything but doesn't block clicks */
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .neon-title {
+                font-size: 3rem;
+                white-space: normal;
+                text-align: center;
+            }
+            
+            .battle-btn {
+                font-size: 2.2rem;
+                padding: 20px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .neon-title {
+                font-size: 2.2rem;
+            }
+            
+            .battle-btn {
+                font-size: 1.8rem;
+                padding: 15px 25px;
+                white-space: normal;
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-zone">
+        <!-- Animated Background (these will appear above the image but below content) -->
+        <div class="stars"></div>
+        <div class="pulse-ring"></div>
+        
+        <div class="game-container">
+            <h1 class="neon-title">AI DEBATE ARENA</h1>
+            
+            <!-- Only one button - positioned exactly over the shape in the image -->
+            <button class="battle-btn" onclick="startGame()">
+                LET THE BATTLE BEGIN
+            </button>
+        </div>
+        
+        <canvas id="particles-canvas"></canvas>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
