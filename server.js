@@ -14,39 +14,30 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
 });
 
-// File to store custom topics
-const CUSTOM_TOPICS_FILE = 'custom-topics.json';
+// In-memory storage for custom topics (Vercel serverless - no file persistence)
+let customTopics = [];
 
-// Initialize custom topics file
+// Initialize custom topics (serverless platforms are stateless)
 function initializeCustomTopics() {
-    if (!fs.existsSync(CUSTOM_TOPICS_FILE)) {
-        fs.writeFileSync(CUSTOM_TOPICS_FILE, JSON.stringify([], null, 2));
-    }
+    // No file I/O on Vercel - filesystem is read-only
+    customTopics = [];
 }
 
-// Load custom topics
+// Load custom topics from memory
 function loadCustomTopics() {
-    try {
-        const data = fs.readFileSync(CUSTOM_TOPICS_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
+    return customTopics;
 }
 
-// Save custom topic
+// Save custom topic to memory (won't persist across deployments)
 function saveCustomTopic(topic) {
     try {
-        const topics = loadCustomTopics();
-        
         // Check if topic already exists
-        if (!topics.some(t => t.toLowerCase() === topic.toLowerCase())) {
-            topics.push(topic);
-            fs.writeFileSync(CUSTOM_TOPICS_FILE, JSON.stringify(topics, null, 2));
+        if (!customTopics.some(t => t.toLowerCase() === topic.toLowerCase())) {
+            customTopics.push(topic);
             console.log(`✅ Saved new topic: "${topic}"`);
         }
         
-        return topics;
+        return customTopics;
     } catch (error) {
         console.error('Error saving topic:', error);
         return [];
@@ -609,8 +600,13 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
-// Serve static files
-app.use(express.static('.'));
+// Serve static files from the correct directory
+app.use(express.static(__dirname));
+
+// Serve index.html for root path
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
